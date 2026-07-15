@@ -1,0 +1,14 @@
+{
+  "name": "atheris-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for Atheris proxies — live stock, ready proxy URLs, and usage, as tools for any MCP-capable agent.",
+  "type": "module",
+  "bin": { "atheris-mcp": "./atheris-mcp.mjs" },
+  "files": ["atheris-mcp.mjs", "README.md"],
+  "engines": { "node": ">=18" },
+  "license": "MIT",
+  "repository": { "type": "git", "url": "git+https://github.com/atheris-ee/atheris-mcp.git" },
+  "homepage": "https://atheris.ee",
+  "mcpName": "io.github.atheris-ee/atheris-mcp",
+  "keywords": ["mcp", "mcp-server", "proxy", "mobile-proxy", "residential-proxy", "ai-agents", "atheris"]
+}

@@ -1,0 +1,26 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-09-29/server.schema.json",
+  "name": "io.github.atheris-ee/atheris-mcp",
+  "description": "Country-targeted mobile and residential proxy egress for agents: live stock, ready-to-use proxy URLs, and remaining-GB checks against the Atheris per-GB API.",
+  "repository": {
+    "url": "https://github.com/atheris-ee/atheris-mcp",
+    "source": "github"
+  },
+  "version": "0.1.0",
+  "packages": [
+    {
+      "registryType": "npm",
+      "identifier": "atheris-mcp",
+      "version": "0.1.0",
+      "transport": { "type": "stdio" },
+      "environmentVariables": [
+        {
+          "name": "ATHERIS_PROXY_KEY",
+          "description": "Atheris pak_ access key (required for atheris_proxy_url and atheris_usage; atheris_stock works without it)",
+          "isRequired": false,
+          "isSecret": true
+        }
+      ]
+    }
+  ]
+}
