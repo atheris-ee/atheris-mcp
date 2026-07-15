@@ -51,12 +51,18 @@ Or from a local checkout:
 Env:
 - `ATHERIS_PROXY_KEY` — your pak access key (required for `atheris_proxy_url`
   and `atheris_usage`; `atheris_stock` works without it).
-- `ATHERIS_API_BASE` — defaults to `https://atheris.ee/api/v1`.
+- `ATHERIS_API_BASE` — defaults to `https://atheris.ee/api/v1`. Your key is sent
+  as a Bearer token to whatever host this names, so only point it at a host you
+  trust.
 
 The key is the same credential used as the proxy password — treat it like one.
 Keep it in `env`, not in command args, and rotate it from the dashboard if it
 leaks. The server talks only to `atheris.ee` (or your `ATHERIS_API_BASE`) and
 collects no telemetry.
+
+**The `atheris_proxy_url` result is also a secret.** Both its `proxy_url` and
+`password` fields embed your pak key — treat the tool's output like the key
+itself: don't log it or paste it into shared transcripts.
 
 ## Session rule (important)
 

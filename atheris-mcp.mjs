@@ -14,7 +14,8 @@
 const API = (process.env.ATHERIS_API_BASE || "https://atheris.ee/api/v1").replace(/\/$/, "");
 const KEY = process.env.ATHERIS_PROXY_KEY || "";
 const PROTOCOL = "2025-06-18";
-const UA = "atheris-mcp/0.1";
+const UA = "atheris-mcp/0.1.1";
+const TIMEOUT_MS = 20_000;
 
 const TOOLS = [
   {
@@ -26,16 +27,17 @@ const TOOLS = [
   {
     name: "atheris_proxy_url",
     description:
-      "Get a ready-to-use Atheris proxy URL for a country. Returns an http:// or socks5:// URL you can hand to any HTTP client. Requires ATHERIS_PROXY_KEY.",
+      "Get a ready-to-use Atheris proxy URL for a country. Returns an http:// or socks5:// URL you can hand to any HTTP client. Requires ATHERIS_PROXY_KEY. NOTE: the returned proxy_url and password embed your pak_ key — treat the result as a secret; do not log it or echo it into transcripts.",
     inputSchema: {
       type: "object",
       properties: {
         country: { type: "string", description: "lowercase ISO code, e.g. us, gb, nl, br" },
         pool: { type: "string", enum: ["mbl", "peer"], description: "mbl=mobile, peer=residential (default mbl)" },
         session: { type: "string", description: "session id [a-z0-9_]{1,64}; SAME id = SAME exit IP. Use a distinct id per identity." },
-        rotation: { type: "string", description: "sticky | sticky-strict | auto10 | auto30 | hard | ondemand (default sticky)" },
+        rotation: { type: "string", description: "sticky | sticky-strict | auto5 | auto10 | auto20 | auto30 | auto60 | hard | ondemand (default sticky)" },
         protocol: { type: "string", enum: ["http", "socks5"], description: "default http" },
         carrier: { type: "string", description: "optional mobile carrier, e.g. tmobile, orange" },
+        city: { type: "string", description: "optional city, lowercase (availability varies by country/pool)" },
       },
       required: ["country"],
     },
@@ -50,7 +52,15 @@ const TOOLS = [
 async function apiGet(path, auth) {
   const headers = { "user-agent": UA };
   if (auth) headers.authorization = `Bearer ${KEY}`;
-  const res = await fetch(`${API}${path}`, { headers });
+  let res;
+  try {
+    res = await fetch(`${API}${path}`, { headers, signal: AbortSignal.timeout(TIMEOUT_MS) });
+  } catch (e) {
+    // Never let an upstream hang or network error wedge the MCP client — a
+    // tool call must always resolve. TimeoutError fires at TIMEOUT_MS.
+    const reason = e?.name === "TimeoutError" ? `timed out after ${TIMEOUT_MS}ms` : (e?.message ?? String(e));
+    return { ok: false, status: 0, json: { error: `request failed: ${reason}` } };
+  }
   const text = await res.text();
   let json;
   try {
@@ -75,7 +85,7 @@ async function callTool(name, args = {}) {
   }
   if (name === "atheris_proxy_url") {
     const q = new URLSearchParams();
-    for (const k of ["country", "pool", "session", "rotation", "protocol", "carrier"]) {
+    for (const k of ["country", "pool", "session", "rotation", "protocol", "carrier", "city"]) {
       if (args[k]) q.set(k, String(args[k]));
     }
     const r = await apiGet(`/proxy?${q.toString()}`, true);
@@ -96,7 +106,7 @@ async function handle(msg) {
     return ok(id, {
       protocolVersion: params?.protocolVersion || PROTOCOL,
       capabilities: { tools: {} },
-      serverInfo: { name: "atheris-mcp", version: "0.1.0" },
+      serverInfo: { name: "atheris-mcp", version: "0.1.1" },
     });
   }
   if (method === "notifications/initialized" || method === "notifications/cancelled") return; // notification, no reply
