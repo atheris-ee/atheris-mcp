@@ -1,3 +1,6 @@
+<!-- SOURCE OF TRUTH: this monorepo mcp/ directory. Any change to atheris-mcp.mjs
+     or this README must be pushed to the public mirror (github.com/atheris-ee/
+     atheris-mcp) and, if the server changed, published to npm as atheris-mcp. -->
 # atheris-mcp
 
 An [MCP](https://modelcontextprotocol.io) server for [Atheris](https://atheris.ee)
