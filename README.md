@@ -22,7 +22,8 @@ Zero dependencies. One file. Node ≥ 18.
 
 You need an Atheris access key (`pak_…`) from the [dashboard](https://atheris.ee/dashboard).
 
-Straight from GitHub (no install):
+From npm ([`atheris-mcp`](https://www.npmjs.com/package/atheris-mcp), also in the
+[official MCP registry](https://registry.modelcontextprotocol.io) as `io.github.atheris-ee/atheris-mcp`):
 
 ```jsonc
 // Claude Desktop / Claude Code / Cursor / any MCP client
@@ -30,12 +31,14 @@ Straight from GitHub (no install):
   "mcpServers": {
     "atheris": {
       "command": "npx",
-      "args": ["-y", "github:atheris-ee/atheris-mcp"],
+      "args": ["-y", "atheris-mcp"],
       "env": { "ATHERIS_PROXY_KEY": "pak_your_key_here" }
     }
   }
 }
 ```
+
+Straight from GitHub also works: `"args": ["-y", "github:atheris-ee/atheris-mcp"]`.
 
 Or from a local checkout:
 
